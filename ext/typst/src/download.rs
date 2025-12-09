@@ -12,8 +12,19 @@ impl<T: Display> Progress for SlientDownload<T> {
     fn print_finish(&mut self, _state: &DownloadState) {}
 }
 
+pub struct FakeDownloader;
+
+impl Downloader for FakeDownloader {
+    fn download(&self, url: &str) -> Result<Vec<u8>, ureq::Error> {
+        Err(ureq::Error::Status(404, "Not Found"))
+    }
+
+    fn new() -> Self {
+        Self
+    }
+}
+
 /// Returns a new downloader.
 pub fn downloader() -> Downloader {
-    let user_agent = concat!("typst-py/", env!("CARGO_PKG_VERSION"));
-    Downloader::new(user_agent)
+    FakeDownloader::new()
 }
